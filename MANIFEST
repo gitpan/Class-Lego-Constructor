@@ -11,3 +11,4 @@ lib/Class/Lego/Constructor.pod
 t/01use.t
 t/02basic.t
 t/03accessors.t
+t/12more.t

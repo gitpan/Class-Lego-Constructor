@@ -1,5 +1,5 @@
 
-use Test::More tests => 24;
+use Test::More tests => 34;
 
 package Foo;
 
@@ -10,11 +10,11 @@ BEGIN {
 
 my $counter = 0;
 
-__PACKAGE__->mk_constructor0({
-  magical_number => 42,
-  title => '<untitled>',
-  date => sub { scalar localtime },
-  counter => sub { ++$counter },
+__PACKAGE__->mk_constructor1({
+  magical_number => { default => 42 },
+  title => { default => '<untitled>' },
+  date => { default => sub { scalar localtime } },
+  counter => { default => sub { ++$counter } },
 });
 
 package main;
@@ -69,3 +69,44 @@ ok( defined &Foo::new, '&new was defined' );
   is( $bar->{counter}, 5, 'counter gets the (computed) default' );
   isnt( $foo->{counter}, $bar->{counter}, 'different objects, different counter value' );
 }
+
+package Boo;
+
+BEGIN {
+  require Class::Lego::Constructor;
+  our @ISA = qw( Class::Lego::Constructor );
+}
+
+use Scalar::Defer qw( defer );
+
+__PACKAGE__->mk_constructor1({
+  number => { default_value => 0 },
+  string => { default_value => 'string' },
+  hash => { default_value => { a => 2 } },
+  array => { default_value => [1,2] },
+  sub => { default_value => sub { $_[0]+1 } },
+  deferred => { default_value => defer { 1 } },
+});
+
+package main;
+
+use Scalar::Defer 0.13 qw( is_deferred );
+
+ok( defined &Boo::new, '&new was defined' );
+
+{
+  my $boo = Boo->new();
+  isa_ok( $boo, 'Boo' );
+
+  is( $boo->{number}, 0, "default_value works with numbers" );
+  is( $boo->{string}, 'string', "default_value works with strings" );
+  is_deeply( $boo->{hash}, { a => 2 }, "default_value works with hash values" );
+  is_deeply( $boo->{array}, [1,2], "default_value works with array values" );
+  ok( ref $boo->{sub} eq 'CODE', "default_value works with CODE" );
+  is( $boo->{sub}->(1), 2, "CODE through default_value works" );
+  ok( is_deferred($boo->{deferred}), "default_value works with Scalar::Defer objects" );
+  is( $boo->{deferred}, 1, "deferred objects through default_value works" );
+}
+
+# TODO test error conditions
+

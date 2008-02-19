@@ -2,19 +2,25 @@ NAME
     Class::Lego::Constructor - Automated constructor generation
 
 SYNOPSIS
-      use Class::Lego::Constructor; # exports defer and lazy
       BEGIN {
+        require Class::Lego::Constructor;
         @ISA = qw( Class::Lego::Constructor );
       }
 
       __PACKAGE__->mk_constructor0({
         magical_number   => 42,
-        timestamp => defer { DateTime->new },
+        timestamp => sub { DateTime->new }, # deferred
       });
       # the weird name, mk_constructor0, is on purpose while API settles
 
+      __PACKAGE__->mk_constructor1({
+        magical_number => { default => 42 },
+        timestamp      => { default => sub { DateTime->new } },
+        sort_function  => { default_value => sub { $a <=> $b } }, # really a sub
+      });
+
 DESCRIPTION
-      NOTE: That modules was formely Class::Constructor::Factory.
+      NOTE: That module was formely called Class::Constructor::Factory.
       It will enter the Class-Lego dist soon.
 
     I like the simplicity of Class::Accessor and friends. With them,
@@ -26,4 +32,18 @@ DESCRIPTION
     attributes easily. This module is a tentative solution to this problem.
 
     ---
+
+    The intent of this module is to augment an existing constructor `new'
+    which receives a hash ref argument containing pairs of field names
+    versus their values.
+
+      $obj = My::Class->new( { f1 => v1, f2 => v2 } );
+
+    When a declared field is omitted from the constructor argument, it can
+    be filled with a default which was declared with `mk_constructor0'.
+
+       default
+       default_value
+
+    make_simple_constructor
 

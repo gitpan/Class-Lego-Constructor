@@ -1,6 +1,6 @@
 ---
 name: Class-Lego-Constructor
-version: 0.003
+version: 0.004
 author:
   - 'Adriano R. Ferreira <ferreira@cpan.org>'
 abstract: Automated constructor generation
@@ -18,7 +18,7 @@ build_requires:
 provides:
   Class::Lego::Constructor:
     file: lib/Class/Lego/Constructor.pm
-    version: 0.003
+    version: 0.004
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

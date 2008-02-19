@@ -16,9 +16,9 @@ BEGIN {
 
 package Foo;
 
-use Class::Lego::Constructor;
 use Class::Accessor::Faster ();
 BEGIN {
+  require Class::Lego::Constructor;
   our @ISA = qw( Class::Accessor::Faster Class::Lego::Constructor );
 }
 
@@ -27,8 +27,8 @@ my $counter = 0;
 my %FIELDS = (
   magical_number => 42,
   title => '<untitled>',
-  date => defer { scalar localtime },
-  counter => defer { ++$counter },
+  date => sub { scalar localtime },
+  counter => sub { ++$counter },
 );
 
 __PACKAGE__->mk_constructor0( \%FIELDS );
